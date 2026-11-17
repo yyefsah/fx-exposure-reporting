@@ -1,0 +1,23 @@
+name: weekly-fx-report
+on:
+  schedule:
+    - cron: "0 6 * * 1"        # chaque lundi 06:00 UTC
+  workflow_dispatch: {}
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+      - name: Générer le rapport (code 2 = alerte critique : rapport produit, run non bloquant)
+        run: python run.py || [ $? -eq 2 ]
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rapport-change
+          path: |
+            outputs/rapport_change.xlsx
+            outputs/rapport_change.pdf
+            outputs/alerts.md

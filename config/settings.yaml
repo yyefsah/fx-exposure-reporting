@@ -1,0 +1,53 @@
+# Paramètres du pipeline de reporting de change (tout ce qui est "politique de trésorerie" est ici)
+source:
+  url: https://raw.githubusercontent.com/datasets/exchange-rates/main/data/daily.csv   # Fed H.10 via FRED / datahub
+  cache_dir: data/raw
+  history_start: "1999-01-04"          # début de la série EUR
+  timeout_s: 30
+  retries: 3
+
+base_currency: EUR
+# libellé du pays dans le fichier source ; toutes les séries sont en "unités de devise pour 1 USD"
+currencies:
+  EUR: Euro
+  GBP: United Kingdom
+  CHF: Switzerland
+  JPY: Japan
+  CNY: China
+# garde-fou d'unités : fourchette plausible (devise pour 1 USD) sur 1999-aujourd'hui
+plausible_range:
+  EUR: [0.5, 1.4]
+  GBP: [0.4, 1.0]
+  CHF: [0.6, 2.0]
+  JPY: [60, 200]
+  CNY: [5, 9]
+
+# niveaux de référence connus (devise pour 1 USD) : détectent une inversion de cotation que la fourchette seule ne voit pas
+anchors:
+  - {date: "1999-01-04", ccy: EUR, value: 0.848, tol: 0.04}   # lancement de l'euro : ≈ 1,18 USD pour 1 EUR
+  - {date: "1999-01-04", ccy: GBP, value: 0.602, tol: 0.04}
+  - {date: "1999-01-04", ccy: CHF, value: 1.366, tol: 0.04}
+  - {date: "1999-01-04", ccy: JPY, value: 112.0, tol: 0.04}
+  - {date: "1999-01-04", ccy: CNY, value: 8.28, tol: 0.04}
+
+quality:
+  max_staleness_business_days: 5       # au-delà : FAIL (pipeline arrêté)
+  max_consecutive_missing: 6           # jours ouvrés manquants d'affilée
+  jump_sigma: 6                        # saut quotidien signalé (WARN) au-delà de 6 écarts-types glissants
+  flat_run_days: 8                     # série figée suspecte
+
+risk:
+  confidence: 0.99
+  horizon_days: 10
+  window_days: 750                     # ≈ 3 ans de données de marché
+  ewma_lambda: 0.94
+  var_limit_eur: 150000                # limite de VaR 99 % 10 j fixée par la politique de trésorerie (hypothèse du projet)
+  min_hedge_ratio: 0.50                # couverture minimale attendue sur le flux net
+  max_ccy_concentration: 0.60          # part max d'une devise dans l'exposition brute non couverte
+  backtest_confidence: [0.95, 0.99]
+  stress_shocks: [-0.10, 0.10]         # choc de l'euro vs toutes les devises
+
+paths:
+  warehouse: outputs/warehouse.db
+  exposures: data/exposures/open_items.csv
+  outputs: outputs

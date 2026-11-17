@@ -1,0 +1,5 @@
+data/raw/
+outputs/warehouse.db
+outputs/pipeline.log
+__pycache__/
+.pytest_cache/

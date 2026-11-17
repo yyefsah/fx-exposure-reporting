@@ -1,0 +1,27 @@
+[
+  {
+    "severity": "ATTENTION",
+    "code": "HEDGE_RATIO",
+    "message": "Taux de couverture 22% < minimum 50% des flux bruts"
+  },
+  {
+    "severity": "INFO",
+    "code": "OVERDUE",
+    "message": "10 facture(s) échue(s) non soldée(s) : 555,851 € d'exposition nette à relancer"
+  },
+  {
+    "severity": "INFO",
+    "code": "DATA_QUALITY",
+    "message": "Qualité des données — sauts quotidiens : 34 sauts > 6σ sur l'historique ; derniers : JPY 2014-10-31 (+2.9%), JPY 2020-03-09 (-2.7%), CNY 2020-02-03 (+1.5%), CNY 2024-08-02 (-1.2%)"
+  },
+  {
+    "severity": "INFO",
+    "code": "BACKTEST_CLUSTER",
+    "message": "Backtest VaR 95% : exceptions groupées dans le temps (Christoffersen p=2.74e-05) — le risque varie avec le régime de volatilité, que la fenêtre historique glissante suit avec retard"
+  },
+  {
+    "severity": "INFO",
+    "code": "BACKTEST_CLUSTER",
+    "message": "Backtest VaR 99% : exceptions groupées dans le temps (Christoffersen p=0.00326) — le risque varie avec le régime de volatilité, que la fenêtre historique glissante suit avec retard"
+  }
+]
